@@ -7,7 +7,8 @@ import { Textarea } from "./ui/textarea"
 
 function StoryWriter() {
 
-  const [story, setStory] = useState("")
+  const [story, setStory] = useState<string>("")
+  const [pages, setPages] = useState<number>()
 
   console.log(story);
 
@@ -20,7 +21,7 @@ function StoryWriter() {
           onChange={(e) => setStory(e.target.value)}
           className="text-black flex-1" placeholder="Write a story about..."
           />
-        <Select>
+        <Select onValueChange={value => setPages(parseInt(value))}>
           <SelectTrigger className="text-black">
             <SelectValue placeholder="How many page should story be?" />
           </SelectTrigger>
@@ -30,7 +31,7 @@ function StoryWriter() {
             ))}
           </SelectContent>
         </Select>
-        <Button className="w-full" size="lg">
+        <Button disabled={!story || !pages} className="w-full" size="lg">
           Generate story
         </Button>
       </section>
