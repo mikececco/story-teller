@@ -9,6 +9,9 @@ function StoryWriter() {
 
   const [story, setStory] = useState<string>("")
   const [pages, setPages] = useState<number>()
+  const [progress, setprogress] = useState<string>()
+  const [runStarted, setRunStarted] = useState<boolean>(false)
+  const [runFinished, setRunFinished] = useState<boolean | null>(null)
 
   console.log(story);
 
@@ -36,8 +39,18 @@ function StoryWriter() {
         </Button>
       </section>
       <section className="flex-1 pb-5 mt-5">
-        <div className="flex flex-col-reverse w-full space-y-2 bg-gray-800 rounded-md text-gray-200 font-mono p-10 h-96 overflow-y-scroll">
-
+        <div className="flex flex-col-reverse w-full space-y-2 bg-gray-800 rounded-md text-gray-200 font-mono p-10 h-96 overflow-y-auto">
+          {/* flex-col-reverse to scroll down like chat interface */}
+          <div>
+            {runFinished === null && (
+              <>
+                <p className="animate-pulse mr-5">Waiting...</p>
+                <br />
+              </>
+            )}
+            <span className="mr-5 text-gray-200">{">>"}</span>
+            {progress}
+          </div>
         </div>
       </section>
     </div>
