@@ -4,15 +4,17 @@ import { useState } from "react"
 import { Button } from "./ui/button"
 import { Select, SelectTrigger, SelectValue, SelectItem, SelectContent } from "./ui/select"
 import { Textarea } from "./ui/textarea"
+import { Frame } from "@gptscript-ai/gptscript"
 
 function StoryWriter() {
 
   const [story, setStory] = useState<string>("")
   const [pages, setPages] = useState<number>()
-  const [progress, setprogress] = useState<string>()
+  const [progress, setProgress] = useState<string>()
   const [runStarted, setRunStarted] = useState<boolean>(false)
   const [runFinished, setRunFinished] = useState<boolean | null>(null)
   const [currentTool, setCurrentTool] = useState<boolean | null>(null)
+  const [event, setEvents] = useState<Frame[]>([])
 
   console.log(story);
 
@@ -32,13 +34,61 @@ function StoryWriter() {
 
     if (response.ok && response.body) {
       //handle stream on API
+
       console.log('Streaming started');
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+
+      handleStream(reader, decoder)
+
     } else {
       setRunStarted(false)
       setRunFinished(true)
       console.error('Failed');
     }
   }
+
+  async function handleStream(reader: ReadableStreamDefaultReader<Uint8Array>, decoder: TextDecoder) {
+    //Manage stream from API
+
+    while (true) {
+      const { done, value } = await reader.read()
+
+      if (done) break //breaks infinity loop
+
+      const chunk = decoder.decode(value, { stream: true})
+
+      const eventData: string[] = chunk
+      .split("\n\n")
+      .filter((line) => line.startsWith("event: "))
+      .map((line) => line.replace(/^event: /, ""));
+
+      //Parse the JSON data and update state
+      eventData.forEach(data => {
+        try {
+          const parsedData = JSON.parse(data)
+          if (parsedData.type === "callProgress") {
+            setProgress(
+              parsedData.output[parsedData.output.length-1].content
+            )
+            setCurrentTool(parsedData.tool?.description || "")
+          } else if (parsedData.type === "callStart") {
+              setCurrentTool(parsedData.tool?.description || "")
+          } else if (parsedData.type === "runFinish") {
+            setRunStarted(false)
+            setRunFinished(true)
+          } else {
+            setEvents((prevEvents) => [...prevEvents, parsedData]) //appending newevents
+          }
+        } catch (error) {
+          console.error('Failed to parse JSON', error);
+        }
+      })
+    }
+  }
+
+
   return (
     <div className="flex flex-col container">
       <section className="flex-1 flex flex-col border border-purple-300 rounded-md p-10 space-y-2">
