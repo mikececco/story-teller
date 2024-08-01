@@ -5,6 +5,7 @@ import { Button } from "./ui/button"
 import { Select, SelectTrigger, SelectValue, SelectItem, SelectContent } from "./ui/select"
 import { Textarea } from "./ui/textarea"
 import { Frame } from "@gptscript-ai/gptscript"
+import renderEventMessage from "@/lib/renderEventMessage"
 
 function StoryWriter() {
 
@@ -14,7 +15,7 @@ function StoryWriter() {
   const [runStarted, setRunStarted] = useState<boolean>(false)
   const [runFinished, setRunFinished] = useState<boolean | null>(null)
   const [currentTool, setCurrentTool] = useState<boolean | null>(null)
-  const [event, setEvents] = useState<Frame[]>([])
+  const [events, setEvents] = useState<Frame[]>([])
 
   console.log(story);
 
@@ -134,6 +135,17 @@ function StoryWriter() {
               {currentTool}
             </div>
           )}
+
+          <div className="space-y-5">
+          {events.map((event: any, index: number) => {
+            return (
+              <div key={index}>
+                <span className="mr-5">{">>"}</span>
+                {renderEventMessage(event)}
+              </div>
+            );
+          })}
+          </div>
 
           {runStarted && (
             <div>
