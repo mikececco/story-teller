@@ -29,6 +29,15 @@ function StoryWriter() {
       },
       body: JSON.stringify({ story, pages, path: storiesPath })
     })
+
+    if (response.ok && response.body) {
+      //handle stream on API
+      console.log('Streaming started');
+    } else {
+      setRunStarted(false)
+      setRunFinished(true)
+      console.error('Failed');
+    }
   }
   return (
     <div className="flex flex-col container">
