@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
           run.on(RunEventType.Event, (data) => {
             controller.enqueue(encoder.encode( //creating stream
-              `event ${JSON.stringify(data)} \n\n`
+              `event: ${JSON.stringify(data)} \n\n`
             ))
           })
 
