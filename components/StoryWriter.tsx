@@ -12,6 +12,7 @@ function StoryWriter() {
   const [progress, setprogress] = useState<string>()
   const [runStarted, setRunStarted] = useState<boolean>(false)
   const [runFinished, setRunFinished] = useState<boolean | null>(null)
+  const [currentTool, setCurrentTool] = useState<boolean | null>(null)
 
   console.log(story);
 
@@ -51,6 +52,21 @@ function StoryWriter() {
             <span className="mr-5 text-gray-200">{">>"}</span>
             {progress}
           </div>
+
+          {currentTool && (
+            <div className="py-18">
+              <span className="mr-5">{"---Current Tool---"}</span>
+              {currentTool}
+            </div>
+          )}
+
+          {runStarted && (
+            <div>
+              <span className="animate-in mr-5">
+                {"---StoryTeller started---"}
+              </span>
+            </div>
+          )}
         </div>
       </section>
     </div>
