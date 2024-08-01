@@ -31,6 +31,15 @@ export async function POST(request: NextRequest) {
           console.log('Error', error);
         }
       }
+
+    })
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      }
     })
   } catch (error) {
     return new Response(JSON.stringify({error: error}), {
