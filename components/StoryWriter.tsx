@@ -16,7 +16,20 @@ function StoryWriter() {
 
   console.log(story);
 
+  const storiesPath = 'public/stories' //instead of a database
 
+  async function runScript() {
+    setRunStarted(true)
+    setRunFinished(false)
+
+    const response  = await fetch('/api/run-script', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ story, pages, path: storiesPath })
+    })
+  }
   return (
     <div className="flex flex-col container">
       <section className="flex-1 flex flex-col border border-purple-300 rounded-md p-10 space-y-2">
@@ -35,7 +48,10 @@ function StoryWriter() {
             ))}
           </SelectContent>
         </Select>
-        <Button disabled={!story || !pages} className="w-full" size="lg">
+        <Button
+          disabled={!story || !pages || runStarted} className="w-full" size="lg"
+          onClick={runScript}
+        >
           Generate story
         </Button>
       </section>
